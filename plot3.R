@@ -1,29 +1,25 @@
-## Week 1 Project 1 Exploratory Analysis
+### Exploratory Final Project
 
-## Read in Data
+NEI <- readRDS("summarySCC_PM25.rds")
+SCC <- readRDS("Source_Classification_Code.rds")
 
-data <- read.csv("data_123.txt", header=  TRUE, 
-                 sep = ";", colClasses = "character")
-
-## Filter Dates
-##We will only be using data from the dates 2007-02-01 and 2007-02-02. 
-##You may find it useful to convert the Date and Time variables to 
-##Date/Time classes in R using the 𝚜𝚝𝚛𝚙𝚝𝚒𝚖𝚎()  and 𝚊𝚜.𝙳𝚊𝚝𝚎() functions.
 library(dplyr)
-dates <- c("1/2/2007", "2/2/2007")
-data <- filter(data, Date %in% dates  )
-data$Global_active_power <- as.numeric(data$Global_active_power)
-data$Time <- data$Time 
-data$date_time <- paste0(data$Date," " , data$Time)
-data$date_time <- strptime(data$date_time, "%d/%m/%Y %H:%M:%S")
+library(ggplot2)
 
-# plot3.png
-## Make Corresponding Plot and Output Plot to PNG
+## Question 3
+NEI <- group_by(NEI, year, type)
+baltimore <- filter(NEI, fips == "24510")
+baltimore <- summarise(baltimore, Total_PMI25 = sum(Emissions))
+
+g <- ggplot(baltimore, aes(year, Total_PMI25))
+g <- g + geom_bar(stat = "identity")
+g <- g + facet_grid(.~type)
 png(filename = "plot3.png")
-plot(data$date_time, data$Sub_metering_1,  type= "l",
-     ylab  = "Energy Sub Metering", xlab = "")
-lines(data$date_time,data$Sub_metering_2, col = "red")
-lines(data$date_time,data$Sub_metering_3, col = "blue")
-legend("topright", lwd = 2, col= c("black","red", "blue"), 
-       legend = c("Sub Metering 1", "Sub Metering 2", "Sub Metering 3"))
+g
 dev.off()
+
+
+
+
+
+
